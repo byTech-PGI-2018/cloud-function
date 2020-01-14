@@ -49,13 +49,20 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
         var query = receitas;
     	var queries = [];
     
+    	/*Scan the query for the 'vegan' keyword*/
+    	var isVegan = ingrediente.includes("vegan");
     
         for (i=0; i<ingrediente.length; i++){
           	console.log('Searching for ', ingrediente[i], ' in queries.');
           	console.log('Current query is: ', query);
-            //query = query.where("ingredients", "array-contains", ingrediente[0]);
-          	//query = query.where("ingredients", "==", ingrediente[i]);
-          queries.push(query.where("ingredients", "array-contains", ingrediente[i]).get());
+          
+          /*Retrieve only vegan recipes if the keyword was included in the request*/
+          if (isVegan){
+            queries.push(query.where("ingredients", "array-contains", ingrediente[i]).where("vegan", "==", true).get());
+          }
+          else {
+            queries.push(query.where("ingredients", "array-contains", ingrediente[i]).get());
+          }
         }
     
     
